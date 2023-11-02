@@ -1,0 +1,106 @@
+# 2次元プロットデータ（3クラス）のデータを読み込んで，k-means法でクラスタリングする
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 2点間距離を測る関数
+def distance(a, b):
+    dist = 0.0
+    for i in range(len(a)):
+        dist += (a[i] - b[i])**2
+    dist =  np.sqrt(dist)    
+    return dist
+
+# データを読み込む
+data = np.loadtxt("data.csv", delimiter=",")
+
+val1 = np.array([0,0])
+val2 = np.array([-0.25,1])
+val3 = np.array([0.75,0.25])
+
+
+dist = [0,0,0]
+class0 = []
+class1 = []
+class2 = []
+
+index = 0
+count = 0
+while True:
+    #クラス分け
+    while index < len(data):
+        dist[0] = distance(val1, data[index])
+        
+        dist[1] = distance(val2, data[index])
+        
+        dist[2] = distance(val3, data[index])
+        minIndex  = dist.index(min(dist))
+        if minIndex == 0:
+            class0.append(data[index])
+        elif minIndex == 1:
+            class1.append(data[index])
+        elif minIndex == 2:
+            class2.append(data[index])
+            
+        index += 1
+        
+    #比較するために重心を記録
+    beforeVal1 = val1
+    beforeVal2 = val2
+    beforeVal3 = val3
+        
+    val1x = 0
+    val1y = 0
+    val2x = 0
+    val2y = 0
+    val3x = 0
+    val3y = 0
+        
+    #各データの表示、xとyの合計
+    size = 0
+    while size < len(class0):
+        val1x += class0[size][0]
+        val1y += class0[size][1]
+        size += 1
+    size = 0
+    while size < len(class1):
+        val2x += class1[size][0]
+        val2y += class1[size][1]
+        size += 1
+    size = 0
+    while size < len(class2):
+        val3x += class2[size][0]
+        val3y += class2[size][1]
+        size += 1
+            
+    #重心を測り表示
+    val1[0] = val1x/len(class0)
+    val1[1] = val1y/len(class0)
+    
+    
+    val2[0] = val2x/len(class1)
+    val2[1] = val2y/len(class1)
+   
+    
+    val3[0] = val3x/len(class2)
+    val3[1] = val3y/len(class2)
+    
+
+    plt.scatter(val3[0],val3[1],marker = "x",color = "g",alpha = 0.5)
+    plt.scatter(val2[0],val2[1],marker = "x",color = "b",alpha = 0.5)
+    plt.scatter(val1[0],val1[1],marker = "x",color = "r",alpha = 0.5)
+    size = 0
+    while size < len(class0):
+        plt.scatter(class0[size][0],class0[size][1],s = 10,color = "r")
+        size += 1
+    size = 0
+    while size < len(class1):
+        plt.scatter(class1[size][0],class1[size][1],s = 10,color = "b")
+        size += 1
+    size = 0
+    while size < len(class2):
+        plt.scatter(class2[size][0],class2[size][1],s = 10,color = "g")
+        size += 1
+    plt.grid()
+    plt.pause(1)
+
+    
